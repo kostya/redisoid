@@ -6,7 +6,7 @@ client.del("queue")
 
 100.times do
   spawn do
-    loop do 
+    loop do
       client.lpush("queue", "abc")
       sleep rand(0.01)
     end
