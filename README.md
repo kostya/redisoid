@@ -1,6 +1,6 @@
 # redisoid
 
-Redis client for Crystal with auto reconnection and pool (wrapper for stefanwille/crystal-redis, ysbaddaden/pool). Ready to use in production.
+Redis client for Crystal with auto-reconnection and pool (wrapper for stefanwille/crystal-redis, ysbaddaden/pool). Ready to use in production.
 
 ## Installation
 
