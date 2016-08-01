@@ -24,4 +24,12 @@ class Redisoid
   def pool_pending
     @cp.pending
   end
+
+  def subscribe(*channels, &callback_setup_block : Redis::Subscription ->)
+    @cp.connection &.subscribe(*channels) { |s| callback_setup_block.call(s) }
+  end
+
+  def psubscribe(*channel_patterns, &callback_setup_block : Redis::Subscription ->)
+    @cp.connection &.subscribe(*channel_patterns) { |s| callback_setup_block.call(s) }
+  end
 end
