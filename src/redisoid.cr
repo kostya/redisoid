@@ -16,4 +16,12 @@ class Redisoid
       return cn.{{call}}
     end
   end
+
+  def pool_size
+    @cp.size
+  end
+
+  def pool_pending
+    @cp.pending
+  end
 end
