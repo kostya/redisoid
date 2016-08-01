@@ -43,4 +43,49 @@ describe Redisoid do
 
     ch.receive.should eq "bla"
   end
+
+  it "work with pipelined" do
+    client = Redisoid.new(**CONFIG)
+    client.pipelined do |pipeline|
+      pipeline.del("foo")
+      pipeline.del("foo1")
+      pipeline.del("foo2")
+      pipeline.del("foo3")
+      pipeline.set("foo1", "first")
+      pipeline.set("foo2", "second")
+      pipeline.set("foo3", "third")
+    end
+
+    client.get("foo2").should eq "second"
+  end
+
+  it "work with transaction" do
+    client = Redisoid.new(**CONFIG)
+    client.multi do |multi|
+      multi.del("foo")
+      multi.del("foo1")
+      multi.del("foo2")
+      multi.del("foo3")
+      multi.set("foo1", "first")
+      multi.set("foo2", "second")
+      multi.set("foo3", "third")
+    end
+
+    client.get("foo2").should eq "second"
+  end
+
+  it "work with transaction with futures" do
+    client = Redisoid.new(**CONFIG)
+    future_1 = Redis::Future.new
+    future_2 = Redis::Future.new
+    client.multi do |multi|
+      multi.set("foo1", "A")
+      multi.set("foo2", "B")
+      future_1 = multi.get("foo1")
+      future_2 = multi.get("foo2")
+    end
+
+    future_1.value.should eq "A"
+    future_2.value.should eq "B"
+  end
 end
