@@ -30,11 +30,11 @@ p client.get("bla")
 ```crystal
 require "redisoid"
 
-client = Redisoid.new(host: "localhost", port: 6379, pool: 150)
+client = Redisoid.new(host: "localhost", port: 6379, pool: 250)
 
 client.del("queue")
 
-c = 0
+count = 0
 
 100.times do
   spawn do
@@ -47,7 +47,7 @@ c = 0
   spawn do
     loop do
       if res = client.lpop("queue")
-        c += res.size
+        count += 1 if res.size == 3
       else
         sleep 0.01
       end
@@ -56,6 +56,17 @@ c = 0
 end
 
 sleep 5.0
-p c
+
+p count
+p client.pool_size
+p client.pool_pending
+
 client.del("queue")
+
+```
+
+```
+42259
+200
+204
 ```
