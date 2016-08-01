@@ -38,7 +38,7 @@ describe Redisoid do
         end
       end
     end
-    sleep 0.1
+    sleep(TIMEOUT + 1.0)
     client1.publish("sub_test", "bla")
 
     ch.receive.should eq "bla"
