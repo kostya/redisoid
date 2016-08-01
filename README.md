@@ -38,11 +38,12 @@ client.del("queue")
   spawn do
     loop do 
       client.lpush("queue", "abc")
-      sleep rand(0.5)
+      sleep rand(0.01)
     end
   end
 end
 
 sleep 5.0
 p client.llen("queue")
+client.del("queue")
 ```
