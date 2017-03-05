@@ -88,4 +88,9 @@ describe Redisoid do
     future_1.value.should eq "A"
     future_2.value.should eq "B"
   end
+
+  it "stats" do
+    client = Redisoid.new(**CONFIG)
+    client.stats.should eq({capacity: 10, available: 10, used: 0})
+  end
 end

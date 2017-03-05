@@ -2,7 +2,7 @@ require "redis-reconnect"
 require "pool/connection"
 
 class Redisoid
-  VERSION = "0.1"
+  VERSION = "0.1.1"
   @cp : ConnectionPool(Redis::Reconnect)
 
   def initialize(@host : String = "localhost", @port : Int32 = 6379, @unixsocket : String? = nil, @password : String? = nil, @database : Int32? = nil, @pool : Int32 = 10)
@@ -23,6 +23,10 @@ class Redisoid
 
   def pool_pending
     @cp.pending
+  end
+
+  def stats
+    {capacity: @pool, available: pool_pending, used: pool_size}
   end
 
   def subscribe(*channels, &callback_setup_block : Redis::Subscription ->)
