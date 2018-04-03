@@ -102,7 +102,7 @@ describe Redisoid do
   end
 
   it "quite multiconcurrent execution" do
-    client = Redisoid.new(**CONFIG)
+    client = Redisoid.new(url: "localhost:7777", pool: 200)
     client.del("test-queue")
     res = [] of String
     checks = 0
