@@ -1,5 +1,5 @@
 name: redisoid
-version: 0.1.1
+version: 0.2
 
 authors:
   - Konstantin Makarchev kostya27@gmail.com
@@ -8,6 +8,7 @@ dependencies:
   pool:
     github: ysbaddaden/pool
   redis-reconnect:
-    github: kostya/redis-reconnect  
+    github: kostya/redis-reconnect
+    version: ">= 0.2"
 
 license: MIT

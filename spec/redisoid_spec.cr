@@ -1,4 +1,5 @@
 require "./spec_helper"
+require "redis"
 
 # manualy run: redis-server --port 7777 --timeout 2
 CONFIG  = {host: "localhost", port: 7777}
@@ -19,12 +20,18 @@ describe Redisoid do
 
   it "reconnect client" do
     client = Redisoid.new(**CONFIG)
-    client.set("bla1", "a")
-    client.get("bla1").should eq "a"
+    client.set("bla2", "a")
+    client.get("bla2").should eq "a"
 
     sleep(TIMEOUT + 1.0)
 
-    client.get("bla1").should eq "a"
+    client.get("bla2").should eq "a"
+  end
+
+  it "connect with url also" do
+    client = Redisoid.new(url: "localhost:7777", pool: 5)
+    client.set("bla3", "a")
+    client.get("bla3").should eq "a"
   end
 
   it "reconnect method with block" do
@@ -92,5 +99,62 @@ describe Redisoid do
   it "stats" do
     client = Redisoid.new(**CONFIG)
     client.stats.should eq({capacity: 10, available: 10, used: 0})
+  end
+
+  it "quite multiconcurrent execution" do
+    client = Redisoid.new(**CONFIG)
+    client.del("test-queue")
+    res = [] of String
+    checks = 0
+
+    n1 = 50
+    n2 = 200
+
+    n1.times do |i|
+      spawn do
+        n2.times do |j|
+          client.set("key-#{i}-#{j}", "#{i}-#{j}")
+          client.rpush("test-queue", "#{i}-#{j}")
+          sleep 0.0001
+        end
+      end
+    end
+
+    ch = Channel(Bool).new
+
+    n1.times do
+      spawn do
+        loop do
+          if v = client.lpop("test-queue")
+            res << v
+            if client.get("key-#{v}") == v
+              checks += 1
+              client.del("key-#{v}")
+            end
+          else
+            sleep 0.0001
+          end
+
+          break if res.size >= n1 * n2
+        end
+        ch.send(true)
+      end
+    end
+
+    n1.times { ch.receive }
+
+    res.size.should eq n1 * n2
+    res.uniq.size.should eq n1 * n2
+
+    checks.should eq n1 * n2
+
+    uniqs = [] of Int64
+
+    res.each do |v|
+      a, b = v.split('-')
+      uniqs << (a.to_i64 * n2 + b.to_i64).to_i64
+    end
+
+    uniqs.sum.should eq ((n1 * n2 - 1).to_i64 * n1.to_i64 * n2.to_i64).to_i64 / 2
   end
 end

@@ -2,12 +2,19 @@ require "redis-reconnect"
 require "pool/connection"
 
 class Redisoid
-  VERSION = "0.1.1"
+  VERSION = "0.2"
+
   @cp : ConnectionPool(Redis::Reconnect)
 
-  def initialize(@host : String = "localhost", @port : Int32 = 6379, @unixsocket : String? = nil, @password : String? = nil, @database : Int32? = nil, @pool : Int32 = 10)
+  def initialize(@host : String = "localhost",
+                 @port : Int32 = 6379,
+                 @unixsocket : String? = nil,
+                 @password : String? = nil,
+                 @database : Int32? = nil,
+                 @pool : Int32 = 10,
+                 @url : String? = nil)
     @cp = ConnectionPool(Redis::Reconnect).new(capacity: @pool) do
-      Redis::Reconnect.new(host: @host, port: @port, unixsocket: @unixsocket, password: @password, database: @database)
+      Redis::Reconnect.new(host: @host, port: @port, unixsocket: @unixsocket, password: @password, database: @database, url: @url)
     end
   end
 
