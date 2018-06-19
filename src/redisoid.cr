@@ -2,7 +2,7 @@ require "redis-reconnect"
 require "pool/connection"
 
 class Redisoid
-  VERSION = "0.2"
+  VERSION = "0.3"
 
   @cp : ConnectionPool(Redis::Reconnect)
 
