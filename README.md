@@ -1,3 +1,5 @@
+# THIS PROJECT DEPRECATED, RECONNECTION LOGIC AND POOLING NOW IMPLEMENTED IN stefanwille/crystal-redis
+
 # redisoid
 
 Redis client for Crystal with auto-reconnection and pool (wrapper for stefanwille/crystal-redis, kostya/redis-reconnect, ysbaddaden/pool). Ready to use in production.
